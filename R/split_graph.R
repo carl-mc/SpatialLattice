@@ -17,13 +17,13 @@
 #' @return List of graphs
 #' 
 #' @import sp
-#' @importFrom rtree knn
+#' @importFrom class knn
 #' @importFrom stats na.omit
 #' @rawNamespace import(igraph, except = c(knn, union))
 #' @export
 split_graph <- function(g, type = c("sprandom", "spregular", "sphexagonal",
                                     "connected_component", "kmeans", "byvar"), 
-                        size = NULL, drop.smaller.than = 1, variable = NULL){
+                        size = NULL, drop.smaller.than = 0, variable = NULL){
   # Check size
   if(!is.null(size)){
     if(size >= length(V(g))){
@@ -51,8 +51,11 @@ split_graph <- function(g, type = c("sprandom", "spregular", "sphexagonal",
                         type = gsub("sp","",type))
     
     ## Cluster
-    centr.tree <- RTree(centers@coords)
-    membership <- unlist(rtree::knn(centr.tree, v.pts@coords, k = 1L))
+    # centr.tree <- RTree(centers@coords)
+    # membership <- unlist(rtree::knn(centr.tree, v.pts@coords, k = 1L))
+    membership <- class::knn(centers@coords, v.pts@coords, 
+                             cl = 1:length(centers),
+                             k = 1L, use.all = FALSE)
     
     ## Split graph
     cl.sum <- table(membership)

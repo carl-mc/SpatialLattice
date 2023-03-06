@@ -10,15 +10,14 @@ License: file LICENSE
 Encoding: UTF-8
 Imports: sp, 
   rgeos,
-  BoostLines,
   Matrix, 
   MapColoring,
   igraph, 
   raster,
-  rtree,
   viridis,
   methods, 
   stats,
+  class,
   graphics
 Remotes: akoyabio/rtree,
   lucgirardin/BoostLines,

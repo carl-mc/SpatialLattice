@@ -279,15 +279,15 @@ summary(model)
 
     ## --------------------------------------------
     ## Maximum Likelihood estimation
-    ## BFGS maximization, 53 iterations
+    ## BFGS maximization, 54 iterations
     ## Return code 0: successful convergence 
     ## Log-Likelihood: -182.1888 
     ## 3  free parameters
     ## Estimates:
     ##            Estimate Std. error t value Pr(> t)
-    ## Constant -1.3317049  2.7804815  -0.479   0.632
-    ## length   -0.0004219  0.0101131  -0.042   0.967
-    ## rand.r    0.4967638  0.5234226   0.949   0.343
+    ## Constant -1.3317054  1.8172348  -0.733   0.464
+    ## length   -0.0004219  0.0066131  -0.064   0.949
+    ## rand.r    0.4967637  0.4911352   1.011   0.312
     ## --------------------------------------------
 
 ## Feedback, comments, questions

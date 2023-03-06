@@ -9,7 +9,7 @@ split_graph(
   type = c("sprandom", "spregular", "sphexagonal", "connected_component", "kmeans",
     "byvar"),
   size = NULL,
-  drop.smaller.than = 1,
+  drop.smaller.than = 0,
   variable = NULL
 )
 }
