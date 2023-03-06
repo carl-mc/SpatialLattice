@@ -7,11 +7,11 @@
 make_opt_color(graph, var, colors = viridis(n = 10, option = "D"))
 }
 \arguments{
+\item{graph}{igraph object with vertex attributes x and y, encoding coordinates.}
+
 \item{var}{vertex attribute name that indicates the grouping / partitioning of vertices}
 
 \item{colors}{Vector of candidate colors. Defaults to \code{viridis(16)}}
-
-\item{g}{igraph object with vertex attributes x and y, encoding coordinates.}
 }
 \value{
 A vector of colors one color per partitioning. Ordered in the same order as \code{unique(vertex_attr(g, var))}

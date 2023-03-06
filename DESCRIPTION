@@ -10,7 +10,17 @@ License: file LICENSE
 Encoding: UTF-8
 Imports: sp, 
   rgeos,
-  BoostLines
+  BoostLines,
+  Matrix, 
+  MapColoring,
+  igraph, 
+  raster,
+  rtree,
+  viridis,
+  methods, 
+  stats,
+  graphics
 Remotes: akoyabio/rtree,
-  lucgirardin/BoostLines
+  lucgirardin/BoostLines,
+  hunzikp/MapColoring
 RoxygenNote: 7.2.2

@@ -12,21 +12,30 @@ output:
 
 ## Introduction
 
+This R-package provides a number of functions to create spatial graph data. By providing a set of standard manipulation functions, it aims to facilitate the analysis of spatial partitionings such as state territories or administrative divisions through the [pspm](https://github.com/carl-mc/pspm) package. 
+
+When using the SpatialLattice package, please cite:
+
+Müller-Crepon, Carl, Guy Schvitz, Lars-Erik Cederman (2023).
+Shaping States into Nations: The Effects of Ethnic Geography on State Borders.
+_American Journal of Political Science_, conditionally accepted for publication.  
+
+Please note that we intend this package to be further developed by ourselves as well as other members of the community. Please do not hesitate to submit issues, contribute directly, or get in touch with us. 
+
 ## Installation
 
-
+Please install the package directly from this github page. 
 
 ```{r, eval = F}
 # Download SpatialLattice package
 library(devtools)
 install_github(repo = "carl-mc/SpatialLattice")
-
-
-
 ```
 
 
 ## Creating spatial graph data
+
+Spatial graphs can take a huge variety of forms. The functions included in the package create _planar_ graphs, that is graphs that can be drawn on a plane such that its edges do not cross each other. The examples below produce such spatial lattices to cover the African continent. Each graph takes the form of an \code{igraph} with an "x" and "y" vertex attribute which indicate the vertices spatial location. 
 
 ```{r, eval = T, warning=FALSE, message=F}
 # Load some libraries needed below
@@ -35,6 +44,9 @@ library(igraph)
 library(sp)
 library(cshapes)
 library(sf)
+
+# Set a random seed
+set.seed(1)
 
 # Load country borders in Africa
 africa <- cshp(date = as.Date("2000-01-01"))
@@ -45,6 +57,8 @@ africa <- as_Spatial(africa)
 
 
 ### Regular grid structures
+The package implements a number of regular grid structures. It provides an interface to create graphs from vertices sampled with a quadratic, hexagonal, triangular, and random sampling structure. A \code{plot_spatial_graph()} function facilitates spatial plotting using R base plots.
+
 ```{r, eval = T, warning=FALSE, message=F}
 
 # Sample grid with hexagonal structure
@@ -56,11 +70,15 @@ grid <- spatial_grid(shape = africa,
 print(vertex_attr_names(grid))
 
 # Plot spatial graph
+par(mar = c(0,0,0,0))
 plot_spatial_graph(grid)
 ```
 
 
 ### Graphs from polygons
+
+We can also create graphs from polygons, where each polygon becomes one vertex connected to its direct neighbors. This method is useful when we know the smallest constitutive unit of partitions. 
+
 ```{r, eval = T, warning=FALSE, message=F}
 # Graph from polygons
 poly.graph <- graph_from_poly(africa)
@@ -69,13 +87,17 @@ poly.graph <- graph_from_poly(africa)
 print(vertex_attr_names(poly.graph))
 
 # Plot spatial graph
+par(mar = c(0,0,0,0))
 plot(africa)
-plot_spatial_graph(poly.graph, add = T)
+plot_spatial_graph(poly.graph, add = T, 
+                   edge.width = 1)
 
 ```
 
 
 ### Graphs from points
+Finally, sometimes we have spatial data on points, which we can transform into a planar graph through a Delaunay triangulation. 
+
 ```{r, eval = T, warning=FALSE, message=F}
 # Graph from points
 
@@ -87,14 +109,18 @@ pts <- SpatialPoints(cbind(africa$caplong,
 pts.graph <- graph_from_pts(points = pts)
 
 ## Plot
+par(mar = c(0,0,0,0))
 plot(africa)
 points(pts, col = "red")
-plot_spatial_graph(pts.graph, add = T)
+plot_spatial_graph(pts.graph, add = T, 
+                   edge.width = 1)
 
 ```
 
 
 ## Basic manipulation of spatial graphs
+
+Given the spatial nature of the graphs, we can transform the graph into its constitutive spatial objects: points and lines. These can then be used for all further spatial operations. The functions presented further below fundamentally build and wrap around this capability. 
 ```{r, eval = T, warning=FALSE, message=F}
 
 # Simple transformations
@@ -112,7 +138,12 @@ E(grid)$length <- geosphere::lengthLine(lines) / 1000
 
 ## Adding data to spatial graphs
 
+In order to analyze such planar graphs, we likely want to add spatial data from different sources and formats to the graph. The following section introduces the relevant functions to do so. 
+
 ### Adding data from Spatial Polygons
+
+Much spatial data is encoded in the form of polygons (as, e.g., the above \code{cshapes} data). The function \code{poly2graph} intersects polygons with our graph and returns for each vertex the relevant polygon ID it intersect with. This ID allows transferring all polygon-level data to the graph's vertices. Binary differences between vertex attributes can then be encoded on edges using the \code{vid_2_edge_diff} function. 
+
 ```{r, eval = T, warning=FALSE, message=F}
 
 # Adding poly data to spatial graphs
@@ -138,6 +169,8 @@ plot_spatial_graph(grid,
 
 
 ### Adding data from spatial lines
+
+Some partitionings maybe affected by spatial lines -- e.g. rivers. We can intersect them with the edges of our graph and encode some of their characteristics in the following manner. Note that, depending on theoretical nature of the modelled process, we may only want to count intersections between edges and lines which are uneven in number, since even numbers of intersections result in the edge not actually crossing a line: if you cross the same river twice, you arrive back at the same side. 
 ```{r, eval = T, warning=FALSE, message=F}
 
 # Adding line data to spatial graphs
@@ -149,12 +182,14 @@ gw.borders <- SpatialLinesDataFrame(gw.borders,
                                     match.ID = F)
 
 ## From polygons
-E(grid)$crosses.border <- lines2graph(gw.borders, grid, aggvar = "is.border",
+E(grid)$crosses.border <- lines2graph(gw.borders, grid, 
+                                      aggvar = "is.border",
                                aggfun = max, 
                                na.val = 0,
                                only.uneven = TRUE)
 
 ## Plot borders on grid
+par(mar = c(0,0,0,0))
 plot_spatial_graph(grid, 
                    vertex.color = gwcode.col, vertex.size = .5,
                    edge.color = ifelse(E(grid)$crosses.border == 1, "black", "lightgrey"),
@@ -165,6 +200,9 @@ plot_spatial_graph(grid,
 
 
 ### Adding data from a spatial raster
+
+Lastly, other data such as elevation or population densities come in the form of spatial raster data. We can use the following functionalities to aggregate raster data onto the edges (or vertices) of our graph. 
+
 ```{r, eval = T, warning=FALSE, message=F}
 # Adding raster data to spatial graphs
 
@@ -192,6 +230,8 @@ plot_spatial_graph(grid,
 
 
 ## Analyzing Spatial Partitionings with pspm
+
+Finally, with a graph that encodes a partitioning (in our case here, into state territories) as well as edge-level predictors, we can estimate a Probabilistic Spatial Partition Model, described [here](https://github.com/carl-mc/pspm).
 ```{r, eval = T, warning=FALSE, message=F}
 # Analyze raster with PSPM
 library(pspm)

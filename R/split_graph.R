@@ -18,6 +18,7 @@
 #' 
 #' @import sp
 #' @importFrom rtree knn
+#' @importFrom stats na.omit
 #' @rawNamespace import(igraph, except = c(knn, union))
 #' @export
 split_graph <- function(g, type = c("sprandom", "spregular", "sphexagonal",

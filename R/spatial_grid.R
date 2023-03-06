@@ -70,6 +70,8 @@ reproject_shape <- function(shape, proj4string){
 #' @param graph Igraph object with x and y coords
 #' @param from source projection
 #' @param to target projection
+#' @param coords character vector with the names of vertex attributes that encode the xand y coordinates. 
+#' Defaults to \code{c("x","y")}.
 #'
 #' @return Reprojected graph
 reproject_graph <- function(graph, from, 
@@ -98,14 +100,14 @@ reproject_graph <- function(graph, from,
 #' @param graph graph
 #' @param prec precision -- outliers that are longer and still allowed. 
 #' @param max.degree Set maximum for degree. Not used currently. 
-#'
+#' @importFrom stats dist
 #' @return A reduced graph
 delete_outlier_edges <- function(graph, prec = .01, max.degree = NULL){
   # Delete long edges
   new.pts <- SpatialPoints(cbind(V(graph)$x, V(graph)$y))
   E(graph)$length <- apply(ends(graph, E(graph), names = F), 1,
                            function(e){
-                             dist(new.pts@coords[e,])
+                             stats::dist(new.pts@coords[e,])
                            })
   graph <- delete.edges(graph, 
                         which(E(graph)$length > min(E(graph)$length) + prec*min(E(graph)$length)))

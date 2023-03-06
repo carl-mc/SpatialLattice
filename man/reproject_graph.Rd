@@ -17,6 +17,9 @@ reproject_graph(
 \item{from}{source projection}
 
 \item{to}{target projection}
+
+\item{coords}{character vector with the names of vertex attributes that encode the xand y coordinates. 
+Defaults to \code{c("x","y")}.}
 }
 \value{
 Reprojected graph

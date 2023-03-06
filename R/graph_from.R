@@ -4,6 +4,7 @@
 #' Vertices are encodes as polygons centroids (if pts are not supplied) and 
 #' edges are drawn on the basis of the adjacency matrix of polygons (based on \code{sp::gTouches})
 #'
+#' @param poly SpatialPolygons* object to transform into spatial igraph.  
 #' @param pts Optional SpatialPoints* object to set different x and y coordinates for graph vertices. 
 #'
 #' @return An igraph object with an "x" and "y" coordinate attribute and all 
@@ -14,21 +15,21 @@
 #' rgeos
 #' Matrix
 #' @rawNamespace import(igraph, except = c(knn, union))
-graph_from_poly <- function(poly, pts = NULL, plot.result = F) {
+graph_from_poly <- function(poly, pts = NULL) {
 
   # Use centroids if no points given
   if(is.null(pts)){
-    pts <- gCentroid(poly, byid = T)
+    pts <- gCentroid(poly, byid = TRUE)
   }
   
   # Neighborhood matrix
   # Get neighbour list
-  ngb.ls <- gTouches(poly, byid = T, returnDense = F)
+  ngb.ls <- gTouches(poly, byid = TRUE, returnDense = FALSE)
   
   # Make sparse matrix
   ngb.mat <- sparseMatrix(i = rep(1:length(ngb.ls), unlist(lapply(ngb.ls, length))),
                           j = unlist(ngb.ls),
-                          x = T)
+                          x = TRUE)
   
   # Make Graph From ngb matrix
   graph <- graph_from_adjacency_matrix(ngb.mat, mode = "undirected", weighted = NULL, 
@@ -39,20 +40,10 @@ graph_from_poly <- function(poly, pts = NULL, plot.result = F) {
   vertex_attr(graph, name = "y") <- coordinates(pts)[,2]
   
   # Add other data
-  if(class(poly) == "SpatialPolygonsDataFrame"){
+  if(inherits(poly, "SpatialPolygonsDataFrame")){
     for(v in colnames(poly@data)){
       vertex_attr(graph, name = v) <- poly@data[,v]
     }
-  }
-  
-  # Plot
-  if(plot.result){
-    asp <- (max( coordinates(pts)[, 2]) - min( coordinates(pts)[, 
-                                                                2]))/(max( coordinates(pts)[, 1]) - min( coordinates(pts)[, 
-                                                                                                                          1]))
-    plot(graph, vertex.size = 0.25, vertex.label = NA, 
-         layout = cbind(vertex_attr(graph, name = "x"), vertex_attr(graph, name = "y")), 
-         asp = asp)
   }
   
   # Return
@@ -75,6 +66,7 @@ graph_from_poly <- function(poly, pts = NULL, plot.result = F) {
 #'
 #' @rawNamespace import(igraph, except = c(knn, union))
 #' @importFrom rtree knn RTree
+#' @importFrom methods .hasSlot
 graph_from_pts <- function(points){
 
   # Remove duplicate points

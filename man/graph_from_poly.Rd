@@ -4,9 +4,11 @@
 \alias{graph_from_poly}
 \title{Polygons to spatial graph}
 \usage{
-graph_from_poly(poly, pts = NULL, plot.result = F)
+graph_from_poly(poly, pts = NULL)
 }
 \arguments{
+\item{poly}{SpatialPolygons* object to transform into spatial igraph.}
+
 \item{pts}{Optional SpatialPoints* object to set different x and y coordinates for graph vertices.}
 }
 \value{

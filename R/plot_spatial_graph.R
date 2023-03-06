@@ -31,6 +31,7 @@ edges2lines <- function(g){
 #' @export
 #' @import MapColoring
 #' viridis
+#' @importFrom stats na.omit
 #' @rawNamespace import(igraph, except = c(knn, union))
 graph_coloring <- function(graph, groupvar, cand.colors = viridis(16)){
   # Edge ends
@@ -85,6 +86,7 @@ graph_coloring <- function(graph, groupvar, cand.colors = viridis(16)){
 #' @rawNamespace import(igraph, except = c(knn, union))
 #' @return Nothing.
 #' @export
+#' @importFrom graphics segments points
 plot_spatial_graph <- function(g, 
                                vertex.size = 0.25, 
                                vertex.color = "black", vertex.pch = 19,
@@ -119,7 +121,7 @@ plot_spatial_graph <- function(g,
 #' @description Implements Philipp Hunzikers \code{MapColoring} approach for partitions of a spatial graphs such that 
 #' neighboring partitions receive colors of maximal distance. Returns result at the partition level.
 #' 
-#' @param g igraph object with vertex attributes x and y, encoding coordinates. 
+#' @param graph igraph object with vertex attributes x and y, encoding coordinates. 
 #' @param var vertex attribute name that indicates the grouping / partitioning of vertices
 #' @param colors Vector of candidate colors. Defaults to \code{viridis(16)}
 #'
@@ -147,5 +149,5 @@ make_opt_color <- function(graph, var, colors = viridis(n = 10, option = "D")){
   diag(adj.mat) <- T
   
   ## Get Optimal contrast colors
-  return(getOptimalContrast(x=adj.mat, col=colors)[Y])
+  return(getOptimalContrast(x=adj.mat, colors=colors)[Y])
 }

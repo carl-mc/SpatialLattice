@@ -18,6 +18,7 @@
 #' @rawNamespace import(igraph, except = c(knn, union))
 #' 
 #' @importFrom raster extent
+#' @importFrom methods as
 #' 
 #' @export
 vertex_within <- function(g, x){
