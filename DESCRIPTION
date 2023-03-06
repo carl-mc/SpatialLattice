@@ -1,0 +1,16 @@
+Package: SpatialLattice
+Type: Package
+Title: Spatial Lattices in R
+Version: 1.0
+Date: 2023-03-06
+Author: Carl Muller-Crepon
+Maintainer: Carl Muller-Crepon <c.a.muller-crepon@lse.ac.uk>
+Description: Creation and handling of Spatial Graphs in R
+License: file LICENSE
+Encoding: UTF-8
+Imports: sp, 
+  rgeos,
+  BoostLines
+Remotes: akoyabio/rtree,
+  lucgirardin/BoostLines
+RoxygenNote: 7.2.2
